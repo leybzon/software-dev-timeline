@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Software Development — Four Eras, Five Slides Each</title>
+<title>Software Development — Yesterday, Today, Tomorrow</title>
+<meta name="description" content="An interactive presentation tracing software development across four eras: from mainframes to AI-augmented engineering. 25 slides, four lenses.">
+<meta property="og:title" content="Software Development — Yesterday, Today, Tomorrow">
+<meta property="og:description" content="From hiring hands to hiring minds to hiring judgment. A visual history and future of how we build software.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -12,7 +16,7 @@
     --bg: #0b0c0e;
     --ink: #e8e6e1;
     --ink-dim: #8a8780;
-    --ink-faint: #4a4842;
+    --ink-faint: #6a6860;
     --rule: #232529;
     --dby:       #d4a574;
     --yesterday: #7ba0c4;
@@ -105,14 +109,7 @@
   }
   .footer-bar .progress { color: var(--accent); }
 
-  /* ----- NOTES ----- */
-  .notes {
-    display: none; position: absolute; left: 4vw; right: 4vw; bottom: 4vh; max-height: 55vh; overflow-y: auto;
-    background: rgba(20, 22, 26, 0.97); backdrop-filter: blur(20px);
-    border: 1px solid var(--accent); border-radius: 4px; padding: 2.5vh 2.5vw; z-index: 10;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  }
-  body.show-notes .notes { display: block; }
+  /* ----- NOTES (overridden by transition rules below) ----- */
   .notes h3 { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 1.5vh; text-transform: uppercase; }
   .notes p { font-size: 0.88rem; line-height: 1.55; color: var(--ink); margin-bottom: 1vh; }
   .notes strong { color: var(--accent); font-weight: 500; }
@@ -213,18 +210,203 @@
   .macro-forces { margin-top: 3vh; padding-top: 1.5vh; border-top: 1px solid var(--rule); display: flex; gap: 2vw; align-items: baseline; }
   .macro-forces .label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--ink-faint); white-space: nowrap; }
   .macro-forces .forces { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 1.1rem; color: var(--ink); }
+
+  /* ----- PROGRESS BAR ----- */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 200;
+    background: linear-gradient(to right, var(--dby), var(--yesterday), var(--today), var(--tomorrow));
+    transition: width 0.4s ease;
+    pointer-events: none;
+  }
+
+  /* ----- SLIDE ENTRY ANIMATIONS ----- */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes growRight { from { width: 0; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .slide.in-view .header { animation: fadeUp 0.6s ease both; }
+  .slide.in-view .stage { animation: fadeUp 0.6s 0.15s ease both; }
+  .slide.in-view .takeaway { animation: fadeUp 0.5s 0.3s ease both; }
+  .slide.in-view .skill-bar-fill { animation: growRight 0.8s 0.4s ease both; }
+  .slide.in-view .cost-segment { animation: fadeIn 0.5s 0.3s ease both; }
+
+  /* ----- NOTES TRANSITION ----- */
+  .notes {
+    display: block !important; position: absolute; left: 4vw; right: 4vw; bottom: 4vh; max-height: 55vh; overflow-y: auto;
+    background: rgba(20, 22, 26, 0.97); backdrop-filter: blur(20px);
+    border: 1px solid var(--accent); border-radius: 4px; padding: 2.5vh 2.5vw; z-index: 10;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    opacity: 0; transform: translateY(12px); pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  body.show-notes .notes { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+  /* ----- ACTIVE TIMELINE DOT PULSE ----- */
+  @keyframes dotPulse { 0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); } 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 12%, transparent); } }
+  .timeline .seg.active .dot { animation: dotPulse 2.5s ease-in-out infinite; }
+
+  /* ----- TITLE / CLOSING SLIDE ----- */
+  .slide-title, .slide-closing {
+    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+  }
+  .slide-title .big-title {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(2.8rem, 5.5vw, 5.5rem); line-height: 1.0; letter-spacing: -0.02em;
+    margin-bottom: 2vh;
+  }
+  .slide-title .big-title em { font-style: italic; color: var(--ink-dim); }
+  .slide-title .subtitle {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem); color: var(--ink-dim);
+    max-width: 50ch; line-height: 1.35; margin-bottom: 4vh;
+  }
+  .slide-title .meta-line {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    letter-spacing: 0.15em; color: var(--ink-faint);
+  }
+  .slide-title .era-pills { display: flex; gap: 1.5vw; margin-top: 3vh; }
+  .slide-title .era-pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em;
+    padding: 0.5em 1.2em; border: 1px solid var(--rule); border-radius: 2px;
+    color: var(--ink-dim);
+  }
+  .slide-title .era-pill .pip { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 0.6em; vertical-align: middle; }
+  .slide-closing .closing-quote {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1.6rem, 3vw, 3rem); color: var(--ink); max-width: 28ch; line-height: 1.25;
+    margin-bottom: 4vh;
+  }
+  .slide-closing .closing-cta {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; color: var(--ink-faint);
+  }
+
+  /* ----- ANCHOR MAP ----- */
+  .anchor-grid {
+    display: grid; grid-template-columns: 100px repeat(4, 1fr); grid-template-rows: auto repeat(4, 1fr);
+    gap: 0; width: 100%; max-width: 1200px; flex: 1; position: relative; z-index: 1;
+  }
+  .anchor-grid .era-col {
+    padding: 1vh 0.8vw 1.5vh; text-align: center; border-bottom: 2px solid var(--accent);
+  }
+  .anchor-grid .era-col .era-num { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--ink-faint); }
+  .anchor-grid .era-col .era-name { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(1.1rem, 1.5vw, 1.5rem); color: var(--accent); }
+  .anchor-grid .era-col .era-years { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--ink-faint); margin-top: 0.3vh; }
+  .anchor-grid .lens-label-cell {
+    padding: 1.5vh 0.6vw; border-top: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center;
+  }
+  .anchor-grid .lens-label-cell .l-num { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em; color: var(--ink-faint); }
+  .anchor-grid .lens-label-cell .l-name { font-family: 'Instrument Serif', serif; font-size: clamp(0.82rem, 1vw, 1rem); color: var(--ink); line-height: 1.15; }
+  .anchor-grid .a-cell {
+    padding: 1.2vh 0.8vw; border-top: 1px solid var(--rule); font-size: clamp(0.72rem, 0.85vw, 0.88rem);
+    line-height: 1.35; color: var(--ink-dim);
+  }
+  .anchor-grid .a-cell strong { color: var(--ink); font-weight: 500; }
+
+  /* ----- MIRROR MOMENT ----- */
+  .mirror {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 0.95rem; color: var(--accent); text-align: center;
+    padding: 0.8vh 0 0; margin-top: 0.4vh;
+  }
+
+  /* ----- TAKEAWAY SLIDE (Monday) ----- */
+  .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5vw; width: 100%; max-width: 1000px; }
+  .action-card {
+    border: 1px solid var(--accent); border-radius: 4px; padding: 3vh 2vw;
+    background: rgba(20,22,26,0.4); display: flex; flex-direction: column; gap: 1.5vh;
+  }
+  .action-card .action-num { font-family: 'Instrument Serif', serif; font-size: 2.4rem; color: var(--accent); font-style: italic; line-height: 1; }
+  .action-card .action-title { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
+  .action-card .action-desc { font-size: 0.88rem; color: var(--ink); line-height: 1.45; }
+
+  /* ----- RESPONSIVE ----- */
+  @media (max-width: 768px) {
+    .dev-card-grid { grid-template-columns: 1fr !important; gap: 2vh; }
+    .anchor-grid { grid-template-columns: 80px repeat(4, 1fr); font-size: 0.8em; }
+    .action-grid { grid-template-columns: 1fr; }
+    .slide { padding: 2vh 3vw; }
+  }
 </style>
 </head>
 <body>
 
-<div class="nav-help">↑ ↓ NAVIGATE  ·  N TOGGLE NOTES</div>
+<div class="progress-bar" id="progressBar"></div>
+<div class="nav-help">↑ ↓ NAVIGATE  ·  N TOGGLE NOTES  ·  SWIPE ON MOBILE</div>
+
+<!-- SLIDE 0 · TITLE -->
+<section class="slide era-today slide-title" id="slide-0">
+  <div class="stage" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <h1 class="big-title">Software Development<br/><em>Yesterday, Today, Tomorrow</em></h1>
+    <div class="subtitle">How we went from hiring hands, to hiring minds, to hiring judgment — and what comes next.</div>
+    <div class="meta-line">GENE L.  ·  4 ERAS  ·  4 LENSES  ·  25 SLIDES</div>
+    <div class="era-pills">
+      <div class="era-pill"><span class="pip" style="background: var(--dby);"></span>DAY BEFORE YESTERDAY</div>
+      <div class="era-pill"><span class="pip" style="background: var(--yesterday);"></span>YESTERDAY</div>
+      <div class="era-pill"><span class="pip" style="background: var(--today);"></span>TODAY</div>
+      <div class="era-pill"><span class="pip" style="background: var(--tomorrow);"></span>TOMORROW</div>
+    </div>
+  </div>
+  <div class="footer-bar"><span></span><span class="progress">01 / 25</span><span>N for notes</span></div>
+</section>
+
+<!-- SLIDE 0.5 · ANCHOR MAP -->
+<section class="slide era-today" id="slide-map">
+  <div class="header">
+    <div class="left">
+      <div class="eyebrow">THE ANCHOR MAP</div>
+      <h1 class="era-name">Four eras, <em>four lenses</em></h1>
+      <div class="tagline">A roadmap for the next 25 slides.</div>
+    </div>
+    <div class="right"><div>OVERVIEW</div><div class="years">1960 — 2030+</div></div>
+  </div>
+  <div class="stage">
+    <div class="anchor-grid">
+      <!-- Column headers -->
+      <div></div>
+      <div class="anchor-grid era-col era-dby" style="--accent: var(--dby);"><div class="era-num">ERA 00</div><div class="era-name">Mainframe</div><div class="era-years">1960 — 1990</div></div>
+      <div class="anchor-grid era-col era-yesterday" style="--accent: var(--yesterday);"><div class="era-num">ERA 01</div><div class="era-name">Heavy industry</div><div class="era-years">1990 — 2010</div></div>
+      <div class="anchor-grid era-col era-today" style="--accent: var(--today);"><div class="era-num">ERA 02</div><div class="era-name">Continuous flow</div><div class="era-years">2010 — 2025</div></div>
+      <div class="anchor-grid era-col era-tomorrow" style="--accent: var(--tomorrow);"><div class="era-num">ERA 03</div><div class="era-name">Evolutionary</div><div class="era-years">2025 — 2030+</div></div>
+      <!-- Row 1: Skills -->
+      <div class="lens-label-cell"><div class="l-num">L·01</div><div class="l-name">Skills &amp; roles</div></div>
+      <div class="a-cell"><strong>Mathematician</strong>, one language for a career, solo work</div>
+      <div class="a-cell"><strong>Deep specialist</strong>, DBA/QA guilds, cert culture</div>
+      <div class="a-cell"><strong>T-shaped</strong>, full-stack + DevOps, AI-augmented</div>
+      <div class="a-cell"><strong>Architect</strong>, spec &amp; eval writing, agent orchestration</div>
+      <!-- Row 2: Agility -->
+      <div class="lens-label-cell"><div class="l-num">L·02</div><div class="l-name">Agility &amp; cadence</div></div>
+      <div class="a-cell">Annual releases, <strong>24-hr feedback</strong>, batch queue</div>
+      <div class="a-cell">Quarterly releases, <strong>waterfall → scrum</strong>, CI emerging</div>
+      <div class="a-cell"><strong>500+ deploys/yr</strong>, feature flags, DORA metrics</div>
+      <div class="a-cell"><strong>Continuous parallel</strong>, eval-gated merge, no release windows</div>
+      <!-- Row 3: Cost -->
+      <div class="lens-label-cell"><div class="l-num">L·03</div><div class="l-name">Cost &amp; economics</div></div>
+      <div class="a-cell"><strong>65% hardware</strong>, software bundled, $5M+ projects</div>
+      <div class="a-cell"><strong>CAPEX heavy</strong>, per-CPU licenses, offshore boom</div>
+      <div class="a-cell"><strong>45% people</strong>, cloud = new mainframe, FinOps discipline</div>
+      <div class="a-cell"><strong>35% AI compute</strong>, $5K MVPs, tokens on every budget</div>
+      <!-- Row 4: Macro -->
+      <div class="lens-label-cell"><div class="l-num">L·04</div><div class="l-name">Macro context</div></div>
+      <div class="a-cell">Cold War R&amp;D, <strong>IBM monopoly</strong>, zero open source</div>
+      <div class="a-cell">Dot-com bust, <strong>globalization</strong>, AWS seeds planted</div>
+      <div class="a-cell">ZIRP → reckoning, <strong>ChatGPT shock</strong>, chip geopolitics</div>
+      <div class="a-cell">AI capex supercycle, <strong>energy constraint</strong>, compute sovereignty</div>
+    </div>
+  </div>
+  <div class="footer-bar"><span>ANCHOR MAP</span><span class="progress">02 / 25</span><span>N for notes</span></div>
+  <aside class="notes">
+    <h3>The Anchor Map</h3>
+    <p>This matrix is your roadmap. Every subsequent slide fits into one cell. <strong>Four eras × four lenses = the story.</strong> Return to this slide mentally whenever you lose the thread.</p>
+    <p>The lenses are: (1) Skills &amp; roles — who does the work and how, (2) Agility &amp; cadence — how fast we ship, (3) Cost &amp; economics — where the money goes, (4) Macro context — the forces outside the building that shape everything inside it.</p>
+  </aside>
+</section>
 
 <!-- ============================================================ -->
 <!-- ===================== DBY ERA ============================== -->
 <!-- ============================================================ -->
 
 <!-- SLIDE 1.0 · DBY HERO -->
-<section class="slide era-dby">
+<section class="slide era-dby" id="slide-1">
   <div class="timeline">
     <div class="seg active"><span class="dot"></span><span class="label">DBY · 1960—1990</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY · 1990—2010</span><span class="line"></span></div>
@@ -308,16 +490,18 @@
     <div class="tag">COBOL · Fortran</div><div class="tag">Structured programming</div>
     <div class="tag">Hardware &gt; programmer time</div>
   </div>
-  <div class="footer-bar"><span>ERA 00 / 03 · OVERVIEW</span><span class="progress">01 / 20</span><span>N for notes</span></div>
+  <div class="mirror">One typo cost a day. Today one prompt writes a module. The distance is 60 years.</div>
+  <div class="footer-bar"><span>ERA 00 / 03 · OVERVIEW</span><span class="progress">03 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Day before yesterday · Overview</h3>
     <p>Mainframes dominated. Code was written on paper, transcribed to <strong>punch cards</strong>, handed to operators, run overnight. One typo cost a day. <strong>Hardware was scarce; programmer time was cheap</strong> — the inverse of today.</p>
+    <p>The batch queue at the bottom of this slide is the earliest ancestor of modern CI pipelines — jobs submitted, queued, executed sequentially, results collected.</p>
     <p>Why include this era: it reminds the audience that every era looks normal until it's replaced. Today's IDEs will look like punch cards in 20 years.</p>
   </aside>
 </section>
 
 <!-- SLIDE 1.1 · DBY SKILLS -->
-<section class="slide era-dby">
+<section class="slide era-dby" id="slide-2">
   <div class="timeline">
     <div class="seg active"><span class="dot"></span><span class="label">DBY · 1960—1990</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -345,7 +529,7 @@
           </svg>
         </div>
         <div class="tools-label">PRIMARY TOOLS</div>
-        <div class="tools-list">Coding sheets · Keypunch · Flowchart templates · Printouts · Slide rule</div>
+        <div class="tools-list">Coding sheets · Keypunch · Flowchart templates · Printouts · Slide rule · Reference manuals</div>
       </div>
       <div class="skill-bars">
         <div class="skill-label-row">SKILLS EMPHASIS</div>
@@ -376,7 +560,8 @@
   <div class="takeaway">
     <div class="tag">One stack for life</div><div class="tag">24-hour debug loops</div><div class="tag">Lone-wolf craft</div>
   </div>
-  <div class="footer-bar"><span>ERA 00 / 03 · LENS 01 SKILLS</span><span class="progress">02 / 20</span><span>N for notes</span></div>
+  <div class="mirror">They knew one language for a career. Your career will span five paradigms.</div>
+  <div class="footer-bar"><span>ERA 00 / 03 · LENS 01 SKILLS</span><span class="progress">04 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>DBY · Skills &amp; Developer Experience</h3>
     <p>The DBY programmer was closer to a <strong>mathematician than an engineer</strong>. Specialization was extreme — you mastered one language (COBOL, Fortran, PL/I) and stayed in it for a career. Hardware awareness was non-negotiable: you optimized for memory and CPU cycles because both were scarce.</p>
@@ -385,7 +570,7 @@
 </section>
 
 <!-- SLIDE 1.2 · DBY AGILITY -->
-<section class="slide era-dby">
+<section class="slide era-dby" id="slide-3">
   <div class="timeline">
     <div class="seg active"><span class="dot"></span><span class="label">DBY · 1960—1990</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -434,7 +619,8 @@
   <div class="takeaway">
     <div class="tag">No agile</div><div class="tag">No CI</div><div class="tag">Change is rare &amp; expensive</div>
   </div>
-  <div class="footer-bar"><span>ERA 00 / 03 · LENS 02 AGILITY</span><span class="progress">03 / 20</span><span>N for notes</span></div>
+  <div class="mirror">Their release was annual. Yours is hourly. Tomorrow it’s continuous.</div>
+  <div class="footer-bar"><span>ERA 00 / 03 · LENS 02 AGILITY</span><span class="progress">05 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>DBY · Agility &amp; Cadence</h3>
     <p>"Agility" wasn't a concept yet — there was nothing to be agile <em>against</em>. Big mainframe programs shipped in <strong>annual or multi-year cycles</strong>. Maintenance releases trickled out as patch tapes mailed to customers.</p>
@@ -443,7 +629,7 @@
 </section>
 
 <!-- SLIDE 1.3 · DBY COST -->
-<section class="slide era-dby">
+<section class="slide era-dby" id="slide-4">
   <div class="timeline">
     <div class="seg active"><span class="dot"></span><span class="label">DBY · 1960—1990</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -481,7 +667,8 @@
   <div class="takeaway">
     <div class="tag">CAPEX heavy</div><div class="tag">Vendor lock</div><div class="tag">No software market</div>
   </div>
-  <div class="footer-bar"><span>ERA 00 / 03 · LENS 03 COST</span><span class="progress">04 / 20</span><span>N for notes</span></div>
+  <div class="mirror">Hardware ate 65% of the budget. Today people do. Tomorrow compute will again.</div>
+  <div class="footer-bar"><span>ERA 00 / 03 · LENS 03 COST</span><span class="progress">06 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>DBY · Cost &amp; Economics</h3>
     <p>The economics were the inverse of today. Hardware dominated — a System/360 in 1965 rented for ~$8K/month (~$80K today), and most organizations rented because outright purchase was beyond reach. <strong>Software was bundled with hardware</strong> at no separate charge until IBM's 1969 unbundling decision, which effectively created the independent software industry.</p>
@@ -490,7 +677,7 @@
 </section>
 
 <!-- SLIDE 1.4 · DBY MACRO -->
-<section class="slide era-dby">
+<section class="slide era-dby" id="slide-5">
   <div class="timeline">
     <div class="seg active"><span class="dot"></span><span class="label">DBY · 1960—1990</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -544,7 +731,8 @@
   <div class="takeaway">
     <div class="tag">IBM = the industry</div><div class="tag">Government as customer</div><div class="tag">Closed ecosystems</div>
   </div>
-  <div class="footer-bar"><span>ERA 00 / 03 · LENS 04 MACRO</span><span class="progress">05 / 20</span><span>N for notes</span></div>
+  <div class="mirror">IBM was the industry. Today there are three clouds. Tomorrow there may be two model providers.</div>
+  <div class="footer-bar"><span>ERA 00 / 03 · LENS 04 MACRO</span><span class="progress">07 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>DBY · Macro Context</h3>
     <p>The era was shaped by <strong>government spending and one dominant vendor</strong>. NASA, the Department of Defense, and similar institutions were the largest customers, and the budgets they signed defined the shape of the industry. IBM held over 70% market share for most of the period.</p>
@@ -557,7 +745,7 @@
 <!-- ============================================================ -->
 
 <!-- SLIDE 2.0 · YESTERDAY HERO -->
-<section class="slide era-yesterday">
+<section class="slide era-yesterday" id="slide-6">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY · 1960—1990</span><span class="line"></span></div>
     <div class="seg active"><span class="dot"></span><span class="label">YESTERDAY · 1990—2010</span><span class="line"></span></div>
@@ -633,7 +821,7 @@
     <div class="tag">Waterfall · RUP</div><div class="tag">Specialist guilds</div><div class="tag">On-prem datacenters</div>
     <div class="tag">J2EE · .NET · SVN</div><div class="tag">Offshoring boom</div>
   </div>
-  <div class="footer-bar"><span>ERA 01 / 03 · OVERVIEW</span><span class="progress">06 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 01 / 03 · OVERVIEW</span><span class="progress">08 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Yesterday · Overview</h3>
     <p>PC and client-server era matured into the early web. <strong>Waterfall and RUP</strong> dominated. Specialist guilds with formal handoffs. Owned datacenters, expensive licenses. "It works on my machine" was born here. Offshoring emerged as the first major cost-arbitrage play.</p>
@@ -641,7 +829,7 @@
 </section>
 
 <!-- SLIDE 2.1 · YESTERDAY SKILLS -->
-<section class="slide era-yesterday">
+<section class="slide era-yesterday" id="slide-7">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg active"><span class="dot"></span><span class="label">YESTERDAY · 1990—2010</span><span class="line"></span></div>
@@ -700,16 +888,16 @@
   <div class="takeaway">
     <div class="tag">10 years on one stack</div><div class="tag">Architect = career goal</div><div class="tag">QA bounces back</div>
   </div>
-  <div class="footer-bar"><span>ERA 01 / 03 · LENS 01 SKILLS</span><span class="progress">07 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 01 / 03 · LENS 01 SKILLS</span><span class="progress">09 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Yesterday · Skills &amp; Developer Experience</h3>
-    <p>The senior engineer of this era was a <strong>deep stack specialist</strong>. Java EE or .NET, sometimes LAMP. You knew the framework's quirks intimately, you'd argue about design patterns, and you'd been doing it for a decade. Career progression was vertical within one platform — Junior → Senior → Architect.</p>
+    <p>The senior engineer of this era was a <strong>deep stack specialist</strong>. Java EE or .NET, sometimes LAMP. You knew the framework's quirks intimately, you'd argue about design patterns, and you'd been doing it for a decade. Career progression was vertical within one platform — Junior → Senior → Architect. <strong>Certifications were the currency</strong> (Sun Certified Java Developer, MCSE, CCNA) — today nobody lists them.</p>
     <p>Developer experience: build, package, hand off, wait. Bugs found in QA bounced back as tickets. Production was someone else's problem. The phrase <strong>"it works on my machine"</strong> became a meme because it was true.</p>
   </aside>
 </section>
 
 <!-- SLIDE 2.2 · YESTERDAY AGILITY -->
-<section class="slide era-yesterday">
+<section class="slide era-yesterday" id="slide-8">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg active"><span class="dot"></span><span class="label">YESTERDAY · 1990—2010</span><span class="line"></span></div>
@@ -749,16 +937,16 @@
   <div class="takeaway">
     <div class="tag">Waterfall → Scrum (slow)</div><div class="tag">CI emerging</div><div class="tag">"Release manager" is a job</div>
   </div>
-  <div class="footer-bar"><span>ERA 01 / 03 · LENS 02 AGILITY</span><span class="progress">08 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 01 / 03 · LENS 02 AGILITY</span><span class="progress">10 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Yesterday · Agility &amp; Cadence</h3>
-    <p>The Agile Manifesto was signed in <strong>2001</strong>, but adoption was uneven and political. Most enterprises stayed on waterfall well into the late 2000s. Even teams that "did agile" often ran <strong>quarterly major releases</strong> with the sprints being internal scaffolding rather than ship cadence.</p>
+    <p>The Agile Manifesto was written and signed at <strong>Snowbird, Utah, February 2001</strong>, but adoption was uneven and political. Most enterprises stayed on waterfall well into the late 2000s. Even teams that "did agile" often ran <strong>quarterly major releases</strong> with the sprints being internal scaffolding rather than ship cadence.</p>
     <p>"Release manager" was a full-time role. Production deployments happened on Friday nights or Saturday mornings, with a war room, runbooks, and rollback plans. Continuous integration tools (CruiseControl, Hudson, Jenkins) were beginning to appear but were not yet default.</p>
   </aside>
 </section>
 
 <!-- SLIDE 2.3 · YESTERDAY COST -->
-<section class="slide era-yesterday">
+<section class="slide era-yesterday" id="slide-9">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg active"><span class="dot"></span><span class="label">YESTERDAY · 1990—2010</span><span class="line"></span></div>
@@ -798,16 +986,16 @@
   <div class="takeaway">
     <div class="tag">CAPEX dominant</div><div class="tag">Per-CPU licensing</div><div class="tag">Offshore = "half price"</div>
   </div>
-  <div class="footer-bar"><span>ERA 01 / 03 · LENS 03 COST</span><span class="progress">09 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 01 / 03 · LENS 03 COST</span><span class="progress">11 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Yesterday · Cost &amp; Economics</h3>
-    <p>Costs were fragmented across many heavy line items. Datacenters consumed CAPEX. Enterprise licenses (Oracle, WebSphere, Windows Server) consumed OPEX at per-CPU pricing that made architecture decisions financial decisions. In-house engineering was expensive in the US and Western Europe, which drove the <strong>offshoring boom</strong> — India and Eastern Europe became the first big global arbitrage on developer labor.</p>
+    <p>Costs were fragmented across many heavy line items. Datacenters consumed CAPEX. Enterprise licenses (Oracle, WebSphere, Windows Server) consumed OPEX at per-CPU pricing that made architecture decisions financial decisions. In-house engineering was expensive in the US and Western Europe, which drove the <strong>offshoring boom</strong> — India and Eastern Europe became the first big global arbitrage on developer labor — a US engineer at $120K/yr vs. an offshore developer at $25K/yr.</p>
     <p>The economic model: <strong>everything cost something specific</strong>. Want to add capacity? Buy more boxes. Want more features? Hire more people. The marginal cost of software was the cost of the things underneath it.</p>
   </aside>
 </section>
 
 <!-- SLIDE 2.4 · YESTERDAY MACRO -->
-<section class="slide era-yesterday">
+<section class="slide era-yesterday" id="slide-10">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg active"><span class="dot"></span><span class="label">YESTERDAY · 1990—2010</span><span class="line"></span></div>
@@ -861,7 +1049,7 @@
   <div class="takeaway">
     <div class="tag">Two crashes shaped the era</div><div class="tag">Open source breaks vendor lock</div><div class="tag">Cloud seeds planted</div>
   </div>
-  <div class="footer-bar"><span>ERA 01 / 03 · LENS 04 MACRO</span><span class="progress">10 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 01 / 03 · LENS 04 MACRO</span><span class="progress">12 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Yesterday · Macro Context</h3>
     <p>The era was bookended by two market crashes — the dot-com bust (2000) and the global financial crisis (2008). Both reshaped IT spending and pushed companies toward <strong>cost discipline</strong>, which in turn accelerated offshoring and open source adoption (free as in "doesn't need a PO").</p>
@@ -874,7 +1062,7 @@
 <!-- ============================================================ -->
 
 <!-- SLIDE 3.0 · TODAY HERO -->
-<section class="slide era-today">
+<section class="slide era-today" id="slide-11">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -968,7 +1156,7 @@
     <div class="tag">Cloud · Kubernetes</div><div class="tag">Agile · DevOps · SRE</div>
     <div class="tag">Git · CI/CD</div><div class="tag">Prompt engineering</div><div class="tag">Agent-assisted coding</div>
   </div>
-  <div class="footer-bar"><span>ERA 02 / 03 · OVERVIEW</span><span class="progress">11 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 02 / 03 · OVERVIEW</span><span class="progress">13 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Today · Overview</h3>
     <p>Two revolutions stacked into one era. <strong>Cloud</strong> (AWS 2006, mainstream by 2015) collapsed CAPEX into OPEX. <strong>Generative AI in the IDE</strong> (Copilot 2021, Cursor 2023, Claude Code 2024+) is mid-revolution right now. The talk's demo lives here.</p>
@@ -976,7 +1164,7 @@
 </section>
 
 <!-- SLIDE 3.1 · TODAY SKILLS -->
-<section class="slide era-today">
+<section class="slide era-today" id="slide-12">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1036,17 +1224,17 @@
   <div class="takeaway">
     <div class="tag">You own the service</div><div class="tag">Prompting is a real skill</div><div class="tag">Reviewer &gt; typist</div>
   </div>
-  <div class="footer-bar"><span>ERA 02 / 03 · LENS 01 SKILLS</span><span class="progress">12 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 02 / 03 · LENS 01 SKILLS</span><span class="progress">14 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Today · Skills &amp; Developer Experience</h3>
     <p>The senior engineer of today is <strong>broader than ever before</strong>. Full-stack literacy is table stakes. DevOps mindset — you own your service in production — is expected. Product sense and communication matter as much as raw coding ability.</p>
-    <p>The newest layer: <strong>AI fluency</strong>. Knowing how to scope a task for an agent, write a good prompt, recognize when the output is wrong, and integrate AI tools into your day without losing your judgment. The most productive engineers right now aren't the fastest typists — they're the best at <strong>decomposing problems and reviewing AI-generated work</strong>.</p>
+    <p>The newest layer: <strong>AI fluency</strong>. Knowing how to scope a task for an agent, write a good prompt, recognize when the output is wrong, and integrate AI tools into your day without losing your judgment. The most productive engineers right now aren't the fastest typists — they're the best at <strong>decomposing problems and reviewing AI-generated work</strong>. <strong>Platform engineering</strong> has emerged as a discipline distinct from DevOps — building the internal developer platform rather than operating individual services.</p>
     <p>Tension to name on stage: the same tools that make seniors more productive may be eroding the apprenticeship that produces the next generation of seniors.</p>
   </aside>
 </section>
 
 <!-- SLIDE 3.2 · TODAY AGILITY -->
-<section class="slide era-today">
+<section class="slide era-today" id="slide-13">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1093,16 +1281,16 @@
   <div class="takeaway">
     <div class="tag">Trunk-based dev</div><div class="tag">Feature flags everywhere</div><div class="tag">DORA &amp; SPACE metrics</div>
   </div>
-  <div class="footer-bar"><span>ERA 02 / 03 · LENS 02 AGILITY</span><span class="progress">13 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 02 / 03 · LENS 02 AGILITY</span><span class="progress">15 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Today · Agility &amp; Cadence</h3>
     <p>For mature teams, "release" no longer means what it meant. Deploys happen many times a day; <strong>feature flags decouple "deployed" from "released"</strong>. The unit of risk has shrunk from "the quarterly release" to "this one PR behind a flag."</p>
-    <p><strong>DORA metrics</strong> (deployment frequency, lead time, change failure rate, time to restore) became the lingua franca for measuring engineering health. The 2024 DORA report shows AI tools correlated with higher individual productivity but mixed effects on team-level throughput — an honest tension worth naming.</p>
+    <p><strong>DORA metrics</strong> (deployment frequency, lead time, change failure rate, time to restore) became the lingua franca for measuring engineering health. The <strong>2024 DORA State of DevOps Report</strong> (Google Cloud) shows AI tools correlated with higher individual productivity but mixed effects on team-level throughput — an honest tension worth naming.</p>
   </aside>
 </section>
 
 <!-- SLIDE 3.3 · TODAY COST -->
-<section class="slide era-today">
+<section class="slide era-today" id="slide-14">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1143,7 +1331,7 @@
   <div class="takeaway">
     <div class="tag">OPEX dominant</div><div class="tag">FinOps is a discipline</div><div class="tag">AI tokens = new line item</div>
   </div>
-  <div class="footer-bar"><span>ERA 02 / 03 · LENS 03 COST</span><span class="progress">14 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 02 / 03 · LENS 03 COST</span><span class="progress">16 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Today · Cost &amp; Economics</h3>
     <p>Cloud collapsed the cost of <strong>starting</strong>. A two-person team with $100K and six months can ship a product that would have required a 50-person team and $5M two decades ago. But cloud bills became a new fixed cost — large enough to spawn an entire discipline (<strong>FinOps</strong>) dedicated to managing them.</p>
@@ -1152,7 +1340,7 @@
 </section>
 
 <!-- SLIDE 3.4 · TODAY MACRO -->
-<section class="slide era-today">
+<section class="slide era-today" id="slide-15">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1206,11 +1394,11 @@
   <div class="takeaway">
     <div class="tag">Two regimes in one era</div><div class="tag">AI changes the conversation</div><div class="tag">Compute = geopolitics</div>
   </div>
-  <div class="footer-bar"><span>ERA 02 / 03 · LENS 04 MACRO</span><span class="progress">15 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 02 / 03 · LENS 04 MACRO</span><span class="progress">17 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Today · Macro Context</h3>
     <p>The era split into two regimes. <strong>2010–2021 (ZIRP):</strong> near-zero interest rates, cheap capital, hyper-growth as the operating model, headcount as the metric. <strong>2022–today (efficiency reckoning):</strong> rate hikes, layoffs across the industry, smaller teams, AI productivity gains used to rationalize restructuring.</p>
-    <p>Late 2022 stacked two shocks in the same quarter: <strong>ChatGPT's public release</strong> and the start of the tech layoff cycle. The two narratives — "AI makes engineers more productive" and "we need fewer engineers" — collided immediately and haven't fully resolved.</p>
+    <p>Late 2022 stacked two shocks in the same quarter: <strong>ChatGPT's public release</strong> and the start of the tech layoff cycle. The two narratives — "AI makes engineers more productive" and "we need fewer engineers" — collided immediately and haven't fully resolved. The emotional impact was real: mass layoffs, survivor's guilt, the shift from "we're a family" to "we're a business." Naming this builds trust with the audience.</p>
     <p>Geopolitics entered software: <strong>chip export controls, CHIPS Act, sovereignty concerns about cloud</strong>. Compute is no longer just a cost — it's a strategic and political asset.</p>
   </aside>
 </section>
@@ -1220,7 +1408,7 @@
 <!-- ============================================================ -->
 
 <!-- SLIDE 4.0 · TOMORROW HERO -->
-<section class="slide era-tomorrow">
+<section class="slide era-tomorrow" id="slide-16">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1229,7 +1417,7 @@
   </div>
   <div class="header">
     <div class="left">
-      <div class="eyebrow">ERA 03 · TOMORROW <span class="sep">/</span> OVERVIEW</div>
+      <div class="eyebrow">ERA 03 · TOMORROW (PROJECTION) <span class="sep">/</span> OVERVIEW</div>
       <h1 class="era-name"><em>Evolutionary</em> code</h1>
       <div class="tagline">State the goal. Evolve the solution. Pick the survivor.</div>
     </div>
@@ -1302,7 +1490,7 @@
     <div class="tag">Spec-driven dev</div><div class="tag">Multi-agent teams</div>
     <div class="tag">Evals as fitness function</div><div class="tag">Code evolves itself</div><div class="tag">Human as architect</div>
   </div>
-  <div class="footer-bar"><span>ERA 03 / 03 · OVERVIEW</span><span class="progress">16 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 03 / 03 · OVERVIEW</span><span class="progress">18 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Tomorrow · Overview</h3>
     <p>Specify intent + evals. Agents generate many candidates. Evals act as fitness function. Best survive, mutate, recombine. Human reviews the winner. <strong>Eval-writing is the new hard skill.</strong></p>
@@ -1310,7 +1498,7 @@
 </section>
 
 <!-- SLIDE 4.1 · TOMORROW SKILLS -->
-<section class="slide era-tomorrow">
+<section class="slide era-tomorrow" id="slide-17">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1319,7 +1507,7 @@
   </div>
   <div class="header">
     <div class="left">
-      <div class="eyebrow">ERA 03 · TOMORROW <span class="sep">/</span> LENS 01 · SKILLS &amp; DEVELOPER EXPERIENCE</div>
+      <div class="eyebrow">ERA 03 · TOMORROW (PROJECTION) <span class="sep">/</span> LENS 01 · SKILLS &amp; DEVELOPER EXPERIENCE</div>
       <h1 class="era-name">Taste &amp; <em>judgment</em></h1>
       <div class="tagline">Write the spec. Write the eval. Orchestrate the swarm.</div>
     </div>
@@ -1376,17 +1564,17 @@
   <div class="takeaway">
     <div class="tag">Specs &gt; code</div><div class="tag">Evals are the new tests</div><div class="tag">Junior pipeline = open question</div>
   </div>
-  <div class="footer-bar"><span>ERA 03 / 03 · LENS 01 SKILLS</span><span class="progress">17 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 03 / 03 · LENS 01 SKILLS</span><span class="progress">19 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Tomorrow · Skills &amp; Developer Experience</h3>
     <p>The engineer's work moves up the stack of abstraction. Writing code becomes the <strong>cheapest part</strong>. Writing the spec — the precise statement of what should happen — and the evals — the precise statement of how we'll know — becomes the expensive and valuable part.</p>
-    <p>Taste and judgment become explicitly named skills. "Which of these 12 candidate implementations should we ship?" is a question with real consequences and no obvious answer. The senior engineer's value is in <strong>knowing which trade-offs matter</strong>.</p>
+    <p>Taste and judgment become explicitly named skills. "Which of these 12 candidate implementations should we ship?" is a question with real consequences and no obvious answer. The senior engineer's value is in <strong>knowing which trade-offs matter</strong>. Note: "25% hand-typing" doesn't mean you stop reading code — you still need to understand it deeply. You just won't author most of it from scratch.</p>
     <p>The hard tension: if AI does the entry-level coding, <strong>where does the next generation learn the craft</strong>? This is the unanswered question of the era. Companies that solve it (apprenticeships, deliberate scaffolding, code archaeology assignments) may end up with a structural advantage.</p>
   </aside>
 </section>
 
 <!-- SLIDE 4.2 · TOMORROW AGILITY -->
-<section class="slide era-tomorrow">
+<section class="slide era-tomorrow" id="slide-18">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1395,7 +1583,7 @@
   </div>
   <div class="header">
     <div class="left">
-      <div class="eyebrow">ERA 03 · TOMORROW <span class="sep">/</span> LENS 02 · AGILITY &amp; CADENCE</div>
+      <div class="eyebrow">ERA 03 · TOMORROW (PROJECTION) <span class="sep">/</span> LENS 02 · AGILITY &amp; CADENCE</div>
       <h1 class="era-name">Continuous, <em>in parallel</em></h1>
       <div class="tagline">Many candidates, in flight at once. Selection, not scheduling.</div>
     </div>
@@ -1433,7 +1621,7 @@
   <div class="takeaway">
     <div class="tag">Parallel exploration</div><div class="tag">Eval-gated merge</div><div class="tag">No release windows</div>
   </div>
-  <div class="footer-bar"><span>ERA 03 / 03 · LENS 02 AGILITY</span><span class="progress">18 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 03 / 03 · LENS 02 AGILITY</span><span class="progress">20 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Tomorrow · Agility &amp; Cadence</h3>
     <p>Continuous flow becomes <strong>continuous parallel exploration</strong>. Instead of one PR going through one CI pipeline, many candidate implementations are tried at once, evaluated against the spec, and the best is merged. The cadence question shifts from "how often do we ship?" to "how many ideas can we evaluate per hour?"</p>
@@ -1442,7 +1630,7 @@
 </section>
 
 <!-- SLIDE 4.3 · TOMORROW COST -->
-<section class="slide era-tomorrow">
+<section class="slide era-tomorrow" id="slide-19">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1451,7 +1639,7 @@
   </div>
   <div class="header">
     <div class="left">
-      <div class="eyebrow">ERA 03 · TOMORROW <span class="sep">/</span> LENS 03 · COST &amp; ECONOMICS</div>
+      <div class="eyebrow">ERA 03 · TOMORROW (PROJECTION) <span class="sep">/</span> LENS 03 · COST &amp; ECONOMICS</div>
       <h1 class="era-name">Compute is the <em>new line item</em></h1>
       <div class="tagline">Software gets cheaper. Inference doesn't.</div>
     </div>
@@ -1482,7 +1670,7 @@
   <div class="takeaway">
     <div class="tag">MVP from $5K</div><div class="tag">Tokens line on every budget</div><div class="tag">Smaller, senior teams</div>
   </div>
-  <div class="footer-bar"><span>ERA 03 / 03 · LENS 03 COST</span><span class="progress">19 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 03 / 03 · LENS 03 COST</span><span class="progress">21 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Tomorrow · Cost &amp; Economics</h3>
     <p>The marginal cost of writing software trends toward the cost of <strong>model calls</strong>. MVP cost collapses to a few thousand dollars. The supply of software expands dramatically, which shifts competitive differentiation from "who can build it" to <strong>distribution, brand, taste, and judgment</strong>.</p>
@@ -1491,7 +1679,7 @@
 </section>
 
 <!-- SLIDE 4.4 · TOMORROW MACRO -->
-<section class="slide era-tomorrow">
+<section class="slide era-tomorrow" id="slide-20">
   <div class="timeline">
     <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
     <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
@@ -1500,7 +1688,7 @@
   </div>
   <div class="header">
     <div class="left">
-      <div class="eyebrow">ERA 03 · TOMORROW <span class="sep">/</span> LENS 04 · MACRO CONTEXT</div>
+      <div class="eyebrow">ERA 03 · TOMORROW (PROJECTION) <span class="sep">/</span> LENS 04 · MACRO CONTEXT</div>
       <h1 class="era-name">Compute, <em>energy, judgment</em></h1>
       <div class="tagline">The constraints move. So does the geopolitics.</div>
     </div>
@@ -1545,37 +1733,217 @@
   <div class="takeaway">
     <div class="tag">Energy &gt; chips as bottleneck</div><div class="tag">Compute sovereignty</div><div class="tag">Services industry under pressure</div>
   </div>
-  <div class="footer-bar"><span>ERA 03 / 03 · LENS 04 MACRO</span><span class="progress">20 / 20</span><span>N for notes</span></div>
+  <div class="footer-bar"><span>ERA 03 / 03 · LENS 04 MACRO</span><span class="progress">22 / 25</span><span>N for notes</span></div>
   <aside class="notes">
     <h3>Tomorrow · Macro Context</h3>
     <p>The forces shaping tomorrow are no longer software-internal. <strong>Capex on AI infrastructure</strong> is reshaping the cloud landscape — hyperscalers and frontier labs are building datacenters at a scale not seen since the original telecom buildout. <strong>Energy</strong> emerges as the binding constraint: chips can be made, but powering them at scale runs into grid limits.</p>
     <p>Geopolitics deepens: chip export controls, <strong>compute sovereignty</strong> as a national policy concern, debates over open-weight vs. closed-weight models as questions of industrial strategy.</p>
-    <p>Inside companies, <strong>smaller engineering orgs</strong> become the new default. The IT services industry — body-shopping, offshore development, large consulting practices — faces structural pressure as the work they sell becomes automatable. Adaptation is uneven; the transition is unlikely to be quiet.</p>
+    <p>Inside companies, <strong>smaller engineering orgs</strong> become the new default. The IT services industry — body-shopping, offshore development, large consulting practices — faces structural pressure as the work they sell becomes automatable. Adaptation is uneven; the transition is unlikely to be quiet. <strong>Regulation</strong> is the sleeper topic: the EU AI Act, potential US frameworks, and liability questions around AI-generated code are all live issues that CTOs should be tracking.</p>
     <p><strong>Closing line for the talk:</strong> "Yesterday we hired hands. Today we hire minds. Tomorrow we hire judgment."</p>
   </aside>
+</section>
+
+<!-- SLIDE 21 · APPRENTICESHIP PROBLEM -->
+<section class="slide era-tomorrow" id="slide-21">
+  <div class="timeline">
+    <div class="seg"><span class="dot"></span><span class="label">DBY</span><span class="line"></span></div>
+    <div class="seg"><span class="dot"></span><span class="label">YESTERDAY</span><span class="line"></span></div>
+    <div class="seg"><span class="dot"></span><span class="label">TODAY</span><span class="line"></span></div>
+    <div class="seg active"><span class="dot"></span><span class="label">TOMORROW · 2025—2030+</span></div>
+  </div>
+  <div class="header">
+    <div class="left">
+      <div class="eyebrow">ERA 03 · TOMORROW (PROJECTION) <span class="sep">/</span> THE OPEN QUESTION</div>
+      <h1 class="era-name">The <em>apprenticeship</em> problem</h1>
+      <div class="tagline">If AI writes the entry-level code, where does the next generation learn the craft?</div>
+    </div>
+    <div class="right"><div>YEARS</div><div class="years">2025 — 2030+</div></div>
+  </div>
+  <div class="stage">
+    <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+      <!-- Traditional pipeline -->
+      <text x="60" y="30" class="svg-label">TRADITIONAL PIPELINE</text>
+      <g transform="translate(60,50)">
+        <rect x="0" y="0" width="160" height="60" class="svg-line"/>
+        <text x="80" y="25" class="svg-label-accent" text-anchor="middle">JUNIOR</text>
+        <text x="80" y="42" class="svg-label" text-anchor="middle">Writes boilerplate</text>
+        <text x="80" y="52" class="svg-label" text-anchor="middle">Learns patterns</text>
+      </g>
+      <path d="M 220 80 L 260 80" class="svg-line"/>
+      <polygon points="260,80 253,76 253,84" class="svg-fill"/>
+      <g transform="translate(260,50)">
+        <rect x="0" y="0" width="160" height="60" class="svg-line"/>
+        <text x="80" y="25" class="svg-label-accent" text-anchor="middle">MID-LEVEL</text>
+        <text x="80" y="42" class="svg-label" text-anchor="middle">Owns features</text>
+        <text x="80" y="52" class="svg-label" text-anchor="middle">Reviews code</text>
+      </g>
+      <path d="M 420 80 L 460 80" class="svg-line"/>
+      <polygon points="460,80 453,76 453,84" class="svg-fill"/>
+      <g transform="translate(460,50)">
+        <rect x="0" y="0" width="160" height="60" class="svg-line"/>
+        <text x="80" y="25" class="svg-label-accent" text-anchor="middle">SENIOR</text>
+        <text x="80" y="42" class="svg-label" text-anchor="middle">Systems design</text>
+        <text x="80" y="52" class="svg-label" text-anchor="middle">Taste &amp; judgment</text>
+      </g>
+      <!-- AI disruption -->
+      <text x="60" y="165" class="svg-label">TOMORROW'S PIPELINE — THE GAP</text>
+      <g transform="translate(60,180)">
+        <rect x="0" y="0" width="160" height="60" class="svg-line" stroke-dasharray="4 3" opacity="0.4"/>
+        <text x="80" y="25" class="svg-label" text-anchor="middle" opacity="0.4">JUNIOR?</text>
+        <text x="80" y="42" class="svg-label" text-anchor="middle" opacity="0.4">AI writes this now</text>
+        <line x1="20" y1="5" x2="140" y2="55" class="svg-line" opacity="0.3"/>
+        <line x1="140" y1="5" x2="20" y2="55" class="svg-line" opacity="0.3"/>
+      </g>
+      <text x="240" y="210" class="svg-label-accent">?</text>
+      <g transform="translate(460,180)">
+        <rect x="0" y="0" width="160" height="60" class="svg-line"/>
+        <text x="80" y="25" class="svg-label-accent" text-anchor="middle">SENIOR</text>
+        <text x="80" y="42" class="svg-label" text-anchor="middle">Still essential</text>
+        <text x="80" y="52" class="svg-label" text-anchor="middle">But how do they form?</text>
+      </g>
+      <!-- Solutions -->
+      <text x="60" y="295" class="svg-label">POSSIBLE BRIDGES</text>
+      <g transform="translate(60,310)">
+        <rect x="0" y="0" width="170" height="30" class="svg-line"/>
+        <text x="85" y="19" class="svg-label-accent" text-anchor="middle">CODE ARCHAEOLOGY</text>
+      </g>
+      <g transform="translate(260,310)">
+        <rect x="0" y="0" width="170" height="30" class="svg-line"/>
+        <text x="85" y="19" class="svg-label-accent" text-anchor="middle">DELIBERATE SCAFFOLDING</text>
+      </g>
+      <g transform="translate(460,310)">
+        <rect x="0" y="0" width="170" height="30" class="svg-line"/>
+        <text x="85" y="19" class="svg-label-accent" text-anchor="middle">AI-ERA APPRENTICESHIPS</text>
+      </g>
+    </svg>
+  </div>
+  <div class="takeaway">
+    <div class="tag">Junior pipeline at risk</div><div class="tag">Craft needs deliberate teaching</div><div class="tag">Structural advantage for solvers</div>
+  </div>
+  <div class="footer-bar"><span>ERA 03 / 03 · THE OPEN QUESTION</span><span class="progress">23 / 25</span><span>N for notes</span></div>
+  <aside class="notes">
+    <h3>The Apprenticeship Problem</h3>
+    <p>This is the most emotionally resonant open question in the talk. If AI writes the entry-level code — the boilerplate, the CRUD endpoints, the basic UI components — <strong>where does the next generation of senior engineers come from?</strong></p>
+    <p>Companies that solve this deliberately — through code archaeology assignments, AI-era apprenticeship programs, and deliberate scaffolding of learning — may end up with a <strong>structural advantage</strong> in five years when the rest of the industry realizes the pipeline has thinned.</p>
+  </aside>
+</section>
+
+<!-- SLIDE 22 · WHAT TO DO MONDAY -->
+<section class="slide era-today" id="slide-22">
+  <div class="header">
+    <div class="left">
+      <div class="eyebrow">TAKEAWAY</div>
+      <h1 class="era-name">What to do <em>Monday</em></h1>
+      <div class="tagline">Three things you can start this week.</div>
+    </div>
+    <div class="right"><div>ACTIONABLE</div><div class="years">This week</div></div>
+  </div>
+  <div class="stage">
+    <div class="action-grid">
+      <div class="action-card">
+        <div class="action-num">1</div>
+        <div class="action-title">Try an agentic IDE</div>
+        <div class="action-desc">Pick one real task — not a toy project — and build it with Cursor, Claude Code, or Copilot Workspace. Notice where you spend your time: it shifts from typing to <strong>reviewing and prompting</strong>.</div>
+      </div>
+      <div class="action-card">
+        <div class="action-num">2</div>
+        <div class="action-title">Write your first eval</div>
+        <div class="action-desc">Take a function your team owns and write an automated evaluation for it — not a unit test, but a <strong>behavioral spec</strong> that could judge multiple candidate implementations. This is the new hard skill.</div>
+      </div>
+      <div class="action-card">
+        <div class="action-num">3</div>
+        <div class="action-title">Ask the hard question</div>
+        <div class="action-desc">In your next team meeting, ask: <strong>"What would we do differently if we had 3 engineers instead of 12?"</strong> The answers reveal which work is essential and which is legacy process.</div>
+      </div>
+    </div>
+  </div>
+  <div class="takeaway">
+    <div class="tag">Start small, start now</div><div class="tag">Evals > tests</div><div class="tag">Question your assumptions</div>
+  </div>
+  <div class="footer-bar"><span>TAKEAWAY</span><span class="progress">24 / 25</span><span>N for notes</span></div>
+  <aside class="notes">
+    <h3>What to do Monday</h3>
+    <p>The goal of this slide is to transform the talk from interesting to <strong>actionable</strong>. Each item is designed to be completable in a single week and to produce a genuine insight.</p>
+    <p>Item 1 forces a visceral experience of the shift. Item 2 introduces the skill that will matter most. Item 3 surfaces assumptions that may already be obsolete.</p>
+  </aside>
+</section>
+
+<!-- SLIDE 23 · CLOSING -->
+<section class="slide era-today slide-closing" id="slide-23">
+  <div class="stage" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <div class="closing-quote">"Yesterday we hired hands.<br/>Today we hire minds.<br/>Tomorrow we hire judgment."</div>
+    <div class="closing-cta">GENE L.  ·  THANK YOU</div>
+  </div>
+  <div class="footer-bar"><span></span><span class="progress">25 / 25</span><span></span></div>
 </section>
 
 <script>
   const slides = Array.from(document.querySelectorAll('.slide'));
   let current = 0;
+  const progressBar = document.getElementById('progressBar');
+
+  function updateProgress() {
+    const pct = ((current + 1) / slides.length) * 100;
+    progressBar.style.width = pct + '%';
+    // Update hash for deep linking
+    const id = slides[current].id;
+    if (id) history.replaceState(null, '', '#' + id);
+  }
+
   function go(delta) {
     current = Math.max(0, Math.min(slides.length - 1, current + delta));
     slides[current].scrollIntoView({ behavior: 'smooth' });
+    updateProgress();
   }
+
+  // IntersectionObserver for current slide tracking + entry animations
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting && e.intersectionRatio > 0.6) {
+      if (e.isIntersecting && e.intersectionRatio > 0.5) {
         current = slides.indexOf(e.target);
+        updateProgress();
+        // Add in-view class for animations
+        e.target.classList.add('in-view');
       }
     });
-  }, { threshold: [0.6] });
+  }, { threshold: [0.5] });
   slides.forEach(s => io.observe(s));
+
+  // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); go(1); }
     else if (['ArrowUp','ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); go(-1); }
     else if (e.key === 'n' || e.key === 'N') { document.body.classList.toggle('show-notes'); }
     else if (e.key === 'Escape') { document.body.classList.remove('show-notes'); }
   });
+
+  // Touch/swipe navigation
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    const delta = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(delta) > 50) { go(delta > 0 ? 1 : -1); }
+  }, { passive: true });
+
+  // Deep link on load
+  if (location.hash) {
+    const target = document.querySelector(location.hash);
+    if (target) {
+      const idx = slides.indexOf(target);
+      if (idx >= 0) { current = idx; target.scrollIntoView(); updateProgress(); }
+    }
+  } else {
+    updateProgress();
+  }
+
+  // Auto-close notes on slide change
+  let lastSlide = current;
+  setInterval(() => {
+    if (current !== lastSlide) {
+      document.body.classList.remove('show-notes');
+      lastSlide = current;
+    }
+  }, 200);
 </script>
 
 </body>
