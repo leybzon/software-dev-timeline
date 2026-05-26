@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Software Development — Yesterday, Today, Tomorrow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0c0e;
+    --bg-elevated: #14161a;
+    --ink: #e8e6e1;
+    --ink-dim: #8a8780;
+    --ink-faint: #4a4842;
+    --rule: #232529;
+
+    /* era accents */
+    --yesterday: #6b8eae;   /* blueprint blue */
+    --today: #5cd99b;       /* electric green */
+    --tomorrow: #f0a868;    /* luminous amber */
+
+    --yesterday-soft: rgba(107, 142, 174, 0.08);
+    --today-soft: rgba(92, 217, 155, 0.08);
+    --tomorrow-soft: rgba(240, 168, 104, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Geist', -apple-system, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* Slide canvas — 16:9, scales to viewport */
+  .slide {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 3.5vh 4vw 3vh;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.025), transparent 60%),
+      var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* subtle grain */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* === HEADER === */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 1.8vh;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 2.2vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .title-block {
+    max-width: 60%;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 1vh;
+  }
+
+  .title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 3.4vw, 3.4rem);
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+  }
+
+  .title em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  .meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+  }
+
+  .meta .slide-num {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* === MATRIX === */
+  .matrix {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 130px 1fr 1fr 1fr;
+    grid-template-rows: auto repeat(5, 1fr);
+    column-gap: 1.2vw;
+    row-gap: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Column headers (era labels) */
+  .era-header {
+    padding: 0 0 2vh 0;
+    position: relative;
+  }
+
+  .era-header .era-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-bottom: 0.4vh;
+  }
+
+  .era-header .era-name {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    line-height: 1;
+    margin-bottom: 0.4vh;
+  }
+
+  .era-header .era-tagline {
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  .era-header .era-years {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    margin-top: 0.6vh;
+  }
+
+  /* era accent line under header */
+  .era-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0.8vh;
+    width: 40px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  .col-yesterday { color: var(--yesterday); }
+  .col-today     { color: var(--today); }
+  .col-tomorrow  { color: var(--tomorrow); }
+
+  /* Lens label cell (leftmost column) */
+  .lens-label {
+    padding: 1.6vh 0.8vw 1.6vh 0;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .lens-label .lens-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5vh;
+  }
+
+  .lens-label .lens-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(0.95rem, 1.2vw, 1.25rem);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  /* Content cells */
+  .cell {
+    padding: 1.6vh 1vw 1.6vh 0;
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+  }
+
+  .cell ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+  }
+
+  .cell li {
+    font-size: clamp(0.78rem, 0.93vw, 0.98rem);
+    line-height: 1.35;
+    color: var(--ink);
+    padding-left: 0.85em;
+    position: relative;
+  }
+
+  .cell li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.55;
+  }
+
+  .cell-yesterday { background: var(--yesterday-soft); }
+  .cell-yesterday li { color: #d9d6ce; }
+  .cell-yesterday li::before { background: var(--yesterday); opacity: 1; }
+
+  .cell-today { background: var(--today-soft); }
+  .cell-today li { color: #e6efe6; }
+  .cell-today li::before { background: var(--today); opacity: 1; }
+
+  .cell-tomorrow { background: var(--tomorrow-soft); }
+  .cell-tomorrow li { color: #efe6da; }
+  .cell-tomorrow li::before { background: var(--tomorrow); opacity: 1; }
+
+  /* tighten side padding inside colored cells */
+  .cell { padding-left: 1vw; padding-right: 1vw; }
+
+  /* === FOOTER ARROW === */
+  .footer {
+    margin-top: 2vh;
+    padding-top: 1.5vh;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    position: relative;
+    z-index: 1;
+  }
+
+  .arrow-line {
+    flex: 1;
+    margin: 0 2vw;
+    height: 1px;
+    background: linear-gradient(to right,
+      var(--yesterday) 0%,
+      var(--yesterday) 30%,
+      var(--today) 50%,
+      var(--tomorrow) 70%,
+      var(--tomorrow) 100%);
+    position: relative;
+  }
+
+  .arrow-line::after {
+    content: '▸';
+    position: absolute;
+    right: -8px;
+    top: -10px;
+    color: var(--tomorrow);
+    font-size: 1rem;
+  }
+
+  /* responsive tweaks for shorter projectors */
+  @media (max-aspect-ratio: 16/10) {
+    .slide { padding: 3vh 3vw; }
+  }
+</style>
+</head>
+<body>
+
+<section class="slide">
+
+  <header class="header">
+    <div class="title-block">
+      <div class="eyebrow">A 25-year view · Five lenses</div>
+      <h1 class="title">Software development, <em>yesterday → today → tomorrow</em></h1>
+    </div>
+    <div class="meta">
+      <div><span class="slide-num">02</span> / 18</div>
+      <div>THE ANCHOR MAP</div>
+    </div>
+  </header>
+
+  <div class="matrix">
+
+    <!-- Column headers -->
+    <div></div>
+    <div class="era-header col-yesterday">
+      <div class="era-num">01 · YESTERDAY</div>
+      <div class="era-name">Heavy industry</div>
+      <div class="era-tagline">Plan, build, ship, hope.</div>
+      <div class="era-years">≈ 2000 — 2010</div>
+    </div>
+    <div class="era-header col-today">
+      <div class="era-num">02 · TODAY</div>
+      <div class="era-name">Continuous flow</div>
+      <div class="era-tagline">Always shipping, always learning.</div>
+      <div class="era-years">≈ 2015 — 2025</div>
+    </div>
+    <div class="era-header col-tomorrow">
+      <div class="era-num">03 · TOMORROW</div>
+      <div class="era-name">Conversation</div>
+      <div class="era-tagline">Specify intent, review output.</div>
+      <div class="era-years">2026 — 2030</div>
+    </div>
+
+    <!-- Row 1: Skills -->
+    <div class="lens-label">
+      <div class="lens-num">L · 01</div>
+      <div class="lens-name">Skills &amp; roles</div>
+    </div>
+    <div class="cell cell-yesterday">
+      <ul>
+        <li>Deep specialists</li>
+        <li>DBA, sysadmin, QA as separate guilds</li>
+        <li>Mastery of one stack is a career</li>
+      </ul>
+    </div>
+    <div class="cell cell-today">
+      <ul>
+        <li>T-shaped engineers</li>
+        <li>Full-stack + DevOps mindset</li>
+        <li>Product sense as table stakes</li>
+      </ul>
+    </div>
+    <div class="cell cell-tomorrow">
+      <ul>
+        <li>Taste, spec-writing, review</li>
+        <li>Agent orchestration = new scripting</li>
+        <li>Junior pipeline in question</li>
+      </ul>
+    </div>
+
+    <!-- Row 2: Methodology -->
+    <div class="lens-label">
+      <div class="lens-num">L · 02</div>
+      <div class="lens-name">Methodology &amp; cadence</div>
+    </div>
+    <div class="cell cell-yesterday">
+      <ul>
+        <li>Waterfall, RUP, big upfront design</li>
+        <li>6–18 month releases</li>
+        <li>Change is a political event</li>
+      </ul>
+    </div>
+    <div class="cell cell-today">
+      <ul>
+        <li>Agile, Scrum, DevOps, SRE</li>
+        <li>2-week sprints, daily deploys</li>
+        <li>Feature flags, trunk-based</li>
+      </ul>
+    </div>
+    <div class="cell cell-tomorrow">
+      <ul>
+        <li>Intent- / spec-driven development</li>
+        <li>PR review is the new bottleneck</li>
+        <li>3–5 people doing what 30 used to</li>
+      </ul>
+    </div>
+
+    <!-- Row 3: Cost -->
+    <div class="lens-label">
+      <div class="lens-num">L · 03</div>
+      <div class="lens-name">Cost &amp; economics</div>
+    </div>
+    <div class="cell cell-yesterday">
+      <ul>
+        <li>CAPEX-heavy; own the datacenter</li>
+        <li>License fees, big ops teams</li>
+        <li>Projects in millions &amp; quarters</li>
+      </ul>
+    </div>
+    <div class="cell cell-today">
+      <ul>
+        <li>OPEX shift to cloud</li>
+        <li>Two people ship what 50 used to</li>
+        <li>Cloud bill = new mainframe bill</li>
+      </ul>
+    </div>
+    <div class="cell cell-tomorrow">
+      <ul>
+        <li>Feature cost → cost of model calls</li>
+        <li>MVP: $100K → $5K</li>
+        <li>Differentiation moves to distribution</li>
+      </ul>
+    </div>
+
+    <!-- Row 4: Tools -->
+    <div class="lens-label">
+      <div class="lens-num">L · 04</div>
+      <div class="lens-name">Tools &amp; infrastructure</div>
+    </div>
+    <div class="cell cell-yesterday">
+      <ul>
+        <li>On-prem servers, SVN, Eclipse</li>
+        <li>Bugzilla, manual QA cycles</li>
+        <li>Bare-metal &amp; vendor lock-in</li>
+      </ul>
+    </div>
+    <div class="cell cell-today">
+      <ul>
+        <li>Git, Kubernetes, Terraform</li>
+        <li>GitHub, Datadog, Slack, CI/CD</li>
+        <li>Copilot, Cursor in the IDE</li>
+      </ul>
+    </div>
+    <div class="cell cell-tomorrow">
+      <ul>
+        <li>Agentic IDEs, autonomous CI agents</li>
+        <li>Evals as the new tests</li>
+        <li>Consolidation on 2–3 model providers</li>
+      </ul>
+    </div>
+
+    <!-- Row 5: Macro -->
+    <div class="lens-label">
+      <div class="lens-num">L · 05</div>
+      <div class="lens-name">Macro context</div>
+    </div>
+    <div class="cell cell-yesterday">
+      <ul>
+        <li>Post-dot-com caution</li>
+        <li>Offshoring boom (first cost arbitrage)</li>
+        <li>IT as a cost center</li>
+      </ul>
+    </div>
+    <div class="cell cell-today">
+      <ul>
+        <li>ZIRP hypergrowth → efficiency reckoning</li>
+        <li>AI assistants enter mainstream</li>
+        <li>“Do more with less”</li>
+      </ul>
+    </div>
+    <div class="cell cell-tomorrow">
+      <ul>
+        <li>Persistent efficiency mandates</li>
+        <li>AI capex supercycle reshapes cloud</li>
+        <li>Compute &amp; energy as first-order</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <span>HIRE HANDS</span>
+    <span class="arrow-line"></span>
+    <span>HIRE MINDS</span>
+    <span class="arrow-line"></span>
+    <span>HIRE JUDGMENT</span>
+  </footer>
+
+</section>
+
+</body>
+</html>
